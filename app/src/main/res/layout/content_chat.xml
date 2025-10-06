@@ -49,8 +49,11 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:src="@drawable/ic_send"
-            android:backgroundTint="#2186EB"
+            android:backgroundTint="@color/primary"
+            app:tint="@color/black"
             app:fabSize="mini"
+            app:elevation="0dp"
+            app:pressedTranslationZ="0dp"
             android:contentDescription="Send message" />
     </LinearLayout>
 

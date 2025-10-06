@@ -6,12 +6,12 @@
         android:id="@+id/action_reload"
         android:icon="@android:drawable/ic_popup_sync"
         android:title="Reload"
-        android:iconTint="@android:color/white"
+        app:iconTint="@color/black"
         app:showAsAction="always" />
     <item
         android:id="@+id/action_clear_session"
         android:icon="@android:drawable/ic_menu_close_clear_cancel"
         android:title="Clear Session"
-        android:iconTint="@android:color/white"
+        app:iconTint="@color/black"
         app:showAsAction="always" />
 </menu>
