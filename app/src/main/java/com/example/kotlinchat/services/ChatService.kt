@@ -222,8 +222,9 @@ class ChatService private constructor(private val context: Context) {
             val params = mutableMapOf<String, String>()
 
             // Profile code and UUID come from Environment
-            params["profile_code"] = Environment.profileCode
+            // params["profile_code"] = Environment.profileCode
             params["profileuuid"] = Environment.profileUuid
+            params["branch"] = Environment.profileBranch
 
             // Session UUID comes from storage
             val sessionUuid = prefs.getString(SESSION_UUID_KEY, null)
@@ -235,7 +236,7 @@ class ChatService private constructor(private val context: Context) {
             params
         } catch (e: Exception) {
             Log.e(TAG, "Error getting connection params", e)
-            mapOf("profile_code" to Environment.profileCode, "profileuuid" to Environment.profileUuid)
+            mapOf("profile_code" to Environment.profileUuid, "profileuuid" to Environment.profileUuid, "branch" to Environment.profileBranch)
         }
     }
 

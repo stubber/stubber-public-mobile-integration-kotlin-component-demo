@@ -19,8 +19,19 @@ object Environment {
     }
 
     // Profile configuration
-    const val profileCode: String = "ROTOBP"
-    const val profileUuid: String = "0627d28a-96a7-5a39-a2e7-4c0207f8d3be"
+    // const val profileCode: String = "ROTOBP"
+
+    val profileUuid: String = if (BuildConfig.DEBUG) {
+        "0627d28a-96a7-5a39-a2e7-4c0207f8d3be"
+    } else {
+        "fb7686c4-c56a-500a-9b82-1cdd1eccf8b9"
+    }
+
+    val profileBranch: String = if (BuildConfig.DEBUG) {
+        "draft"
+    } else {
+        "live"
+    }
 
     // Print environment info (for debugging)
     fun printEnvironmentInfo() {
@@ -28,8 +39,9 @@ object Environment {
             Log.d("Environment", "=== Environment Configuration ===")
             Log.d("Environment", "Server URL: $serverUrl")
             Log.d("Environment", "File Server URL: $fileServerUrl")
-            Log.d("Environment", "Profile Code: $profileCode")
-            Log.d("Environment", "Profile UUID: $profileUuid")
+            // Log.d("Environment", "Profile Code: $profileCode")
+            Log.d("Environment", "Profile UUID: $profileBranch")
+            Log.d("Environment", "Profile branch: $")
             Log.d("Environment", "Debug Mode: ${BuildConfig.DEBUG}")
             Log.d("Environment", "================================")
         }
