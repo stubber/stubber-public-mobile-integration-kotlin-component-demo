@@ -6,17 +6,14 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.kotlinchat.models.Attachment
 import com.example.kotlinchat.models.Message
 import com.example.kotlinchat.models.MessageDirection
-import com.example.kotlinchat.models.UploadingAttachment
-import com.example.kotlinchat.services.StorageService
+import com.example.kotlinchat.services.ChatService
 import kotlinx.coroutines.launch
-import org.json.JSONArray
 import org.json.JSONObject
 
 class MessageViewModel(application: Application) : AndroidViewModel(application) {
-    private val storageService = StorageService(application)
+    private val chatService = ChatService.getInstance(application)
 
     private val _messages = MutableLiveData<List<Message>>(emptyList())
     val messages: LiveData<List<Message>> = _messages
@@ -39,86 +36,20 @@ class MessageViewModel(application: Application) : AndroidViewModel(application)
     fun addIncomingMessage(payload: JSONObject) {
         val messageText = payload.optString("data", "")
         if (messageText.isNotEmpty()) {
-            // Process attachments
-            val attachments = mutableListOf<Attachment>()
-            val attachmentsArray = payload.optJSONArray("attachments")
-            if (attachmentsArray != null) {
-                for (i in 0 until attachmentsArray.length()) {
-                    val attachmentObj = attachmentsArray.getJSONObject(i)
-                    val fileuuid = attachmentObj.optString("fileuuid", "")
-                    val filename = attachmentObj.optString("filename", "")
-                    val contentType = attachmentObj.optString("contentType", "")
-                    val originalname = attachmentObj.optString("originalname", "")
-
-                    if (fileuuid.isNotEmpty()) {
-                        attachments.add(
-                            Attachment(
-                                filename = filename,
-                                originalname = originalname,
-                                fileuuid = fileuuid,
-                                contentType = contentType
-                            )
-                        )
-                    }
-                }
-            }
-
             val message = Message(
                 direction = MessageDirection.INCOMING,
-                message = messageText,
-                attachments = attachments
+                message = messageText
             )
-
             addMessage(message)
         }
     }
 
-    fun addOutgoingMessage(
-        messageText: String,
-        uploadingFiles: List<UploadingAttachment> = emptyList()
-    ) {
+    fun addOutgoingMessage(messageText: String) {
         val message = Message(
             direction = MessageDirection.OUTGOING,
-            message = messageText,
-            attachments = emptyList(),
-            uploadingAttachments = uploadingFiles
+            message = messageText
         )
         addMessage(message)
-    }
-
-    fun addOutgoingMessageWithAttachments(
-        messageText: String,
-        attachments: List<Attachment> = emptyList(),
-        uploadingFiles: List<UploadingAttachment> = emptyList()
-    ) {
-        val message = Message(
-            direction = MessageDirection.OUTGOING,
-            message = messageText,
-            attachments = attachments,
-            uploadingAttachments = uploadingFiles
-        )
-        addMessage(message)
-    }
-
-    fun updateMessageWithUploadedFiles(
-        message: Message,
-        uploadedFiles: List<Attachment>
-    ) {
-        val currentMessages = _messages.value.orEmpty().toMutableList()
-        val index = currentMessages.indexOf(message)
-        if (index != -1) {
-            // Create a new message with uploaded files and clear uploading attachments
-            val updatedMessage = Message(
-                direction = message.direction,
-                message = message.message,
-                attachments = message.attachments + uploadedFiles,
-                uploadingAttachments = emptyList(), // Clear uploading attachments
-                timestamp = message.timestamp
-            )
-            currentMessages[index] = updatedMessage
-            _messages.value = currentMessages
-            saveMessages()
-        }
     }
 
     fun clearMessages() {
@@ -129,7 +60,7 @@ class MessageViewModel(application: Application) : AndroidViewModel(application)
     fun loadMessages() {
         viewModelScope.launch {
             try {
-                val savedMessages = storageService.loadMessages()
+                val savedMessages = chatService.loadMessages()
                 _messages.postValue(savedMessages)
             } catch (e: Exception) {
                 Log.e(TAG, "Error loading messages", e)
@@ -141,7 +72,7 @@ class MessageViewModel(application: Application) : AndroidViewModel(application)
         viewModelScope.launch {
             try {
                 val messagesToSave = _messages.value.orEmpty()
-                storageService.saveMessages(messagesToSave)
+                chatService.saveMessages(messagesToSave)
             } catch (e: Exception) {
                 Log.e(TAG, "Error saving messages", e)
             }
