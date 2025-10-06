@@ -59,6 +59,9 @@ class ChatActivity : AppCompatActivity() {
         // Observe messages
         observeMessages()
 
+        // Load messages from storage
+        messageViewModel.loadMessages()
+
         // Connect to socket
         chatService.connect()
     }
@@ -173,8 +176,16 @@ class ChatActivity : AppCompatActivity() {
     }
 
     private fun clearSession() {
-        Log.d(TAG, "Clearing session UUID from storage")
+        Log.d(TAG, "Clearing session UUID and messages from storage")
+
+        // Clear messages from ViewModel and storage
+        messageViewModel.clearMessages()
+
+        // Clear session UUID from storage
         chatService.clearSessionUuid()
+
+        // Exit the activity
+        finish()
     }
 
     private fun reloadConnection() {

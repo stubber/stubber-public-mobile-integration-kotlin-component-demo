@@ -27,10 +27,18 @@ data class Message(
 
     companion object {
         fun fromMap(map: Map<String, Any>): Message {
+            val timestampValue = map["timestamp"]
+            val timestampLong = when (timestampValue) {
+                is Long -> timestampValue
+                is Double -> timestampValue.toLong()
+                is Int -> timestampValue.toLong()
+                else -> Date().time
+            }
+
             return Message(
                 direction = MessageDirection.valueOf(map["direction"] as String),
                 message = map["message"] as String,
-                timestamp = Date(map["timestamp"] as Long)
+                timestamp = Date(timestampLong)
             )
         }
     }

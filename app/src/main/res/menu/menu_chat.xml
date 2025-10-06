@@ -3,13 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.example.kotlinchat.ChatActivity">
     <item
-        android:id="@+id/action_clear_session"
-        android:icon="@android:drawable/ic_menu_delete"
-        android:title="Clear Session"
-        app:showAsAction="always" />
-    <item
         android:id="@+id/action_reload"
         android:icon="@android:drawable/ic_popup_sync"
         android:title="Reload"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_clear_session"
+        android:icon="@android:drawable/ic_menu_close_clear_cancel"
+        android:title="Clear Session"
         app:showAsAction="always" />
 </menu>
