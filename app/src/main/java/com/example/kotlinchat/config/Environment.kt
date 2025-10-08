@@ -10,7 +10,6 @@ object Environment {
     // val profileCode: String = ""
     // val profileUuid: String = "0627d28a-96a7-5a39-a2e7-4c0207f8d3be"
 
-    // Sanlum config
     val serverUrl: String = "https://api.stubber.zone:6020"
     val fileServerUrl: String = "https://app.stubber.com/api/fileserver/file" 
     val profileCode: String = ""
@@ -23,7 +22,6 @@ object Environment {
         "live"
     }
 
-    // Print environment info (for debugging)
     fun printEnvironmentInfo() {
         if (BuildConfig.DEBUG) {
             Log.d("Environment", "=== Environment Configuration ===")

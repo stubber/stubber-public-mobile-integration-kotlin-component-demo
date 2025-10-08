@@ -178,29 +178,19 @@ class ChatActivity : AppCompatActivity() {
     private fun clearSession() {
         Log.d(TAG, "Clearing session UUID and messages from storage")
 
-        // Clear messages from ViewModel and storage
         messageViewModel.clearMessages()
-
-        // Clear session UUID from storage
         chatService.clearSessionUuid()
 
-        // Exit the activity
         finish()
     }
 
     private fun reloadConnection() {
         Log.d(TAG, "Reloading connection - clearing session UUID and messages")
 
-        // Clear messages
         messageViewModel.clearMessages()
-
-        // Clear session UUID from storage
         chatService.clearSessionUuid()
 
-        // Disconnect current connection
         chatService.disconnect()
-
-        // Reconnect with new session
         chatService.connect()
     }
 }
