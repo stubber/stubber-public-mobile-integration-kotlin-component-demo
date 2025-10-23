@@ -1,4 +1,4 @@
-package com.example.kotlinchat.models
+package com.stubber.stubberchatsdk.chat
 
 import java.util.Date
 

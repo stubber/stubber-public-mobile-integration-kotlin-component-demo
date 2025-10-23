@@ -1,17 +1,18 @@
-package com.example.kotlinchat.services
+package com.stubber.stubberchatsdk.chat
 
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
-import com.example.kotlinchat.config.Environment
-import com.example.kotlinchat.models.Message
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.socket.client.IO
 import io.socket.client.Socket
 import org.json.JSONObject
 
-class ChatService private constructor(private val context: Context) {
+class ChatService private constructor(
+    private val context: Context,
+    private val config: ChatConfig
+) {
 
     // Socket properties
     private var socket: Socket? = null
@@ -32,9 +33,9 @@ class ChatService private constructor(private val context: Context) {
         @Volatile
         private var instance: ChatService? = null
 
-        fun getInstance(context: Context): ChatService {
+        fun getInstance(context: Context, config: ChatConfig): ChatService {
             return instance ?: synchronized(this) {
-                instance ?: ChatService(context.applicationContext).also { instance = it }
+                instance ?: ChatService(context.applicationContext, config).also { instance = it }
             }
         }
     }
@@ -55,7 +56,7 @@ class ChatService private constructor(private val context: Context) {
 
     fun connect() {
         try {
-            val serverUrl = Environment.serverUrl
+            val serverUrl = config.serverUrl
             val opts = IO.Options().apply {
                 path = "/v2/socket.io/"
                 transports = arrayOf("websocket", "polling")
@@ -221,10 +222,9 @@ class ChatService private constructor(private val context: Context) {
         return try {
             val params = mutableMapOf<String, String>()
 
-            // Profile code and UUID come from Environment
-            // params["profile_code"] = Environment.profileCode
-            params["profileuuid"] = Environment.profileUuid
-            params["branch"] = Environment.profileBranch
+            // Profile code and UUID come from config
+            params["profileuuid"] = config.profileUuid
+            params["branch"] = config.profileBranch
 
             // Session UUID comes from storage
             val sessionUuid = prefs.getString(SESSION_UUID_KEY, null)
@@ -236,7 +236,7 @@ class ChatService private constructor(private val context: Context) {
             params
         } catch (e: Exception) {
             Log.e(TAG, "Error getting connection params", e)
-            mapOf("profile_code" to Environment.profileUuid, "profileuuid" to Environment.profileUuid, "branch" to Environment.profileBranch)
+            mapOf("profileuuid" to config.profileUuid, "branch" to config.profileBranch)
         }
     }
 

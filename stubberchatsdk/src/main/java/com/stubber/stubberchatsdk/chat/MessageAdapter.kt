@@ -1,17 +1,18 @@
-package com.example.kotlinchat.adapter
+package com.stubber.stubberchatsdk.chat
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.kotlinchat.R
-import com.example.kotlinchat.models.Message
-import com.example.kotlinchat.models.MessageDirection
 import java.util.Date
 import java.util.concurrent.TimeUnit
 
-class MessageAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class MessageAdapter(
+    private val incomingLayoutId: Int,
+    private val outgoingLayoutId: Int
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
     private val messages = mutableListOf<Message>()
 
     companion object {
@@ -37,12 +38,12 @@ class MessageAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         return when (viewType) {
             VIEW_TYPE_INCOMING -> {
                 val view = LayoutInflater.from(parent.context)
-                    .inflate(R.layout.item_message_in, parent, false)
+                    .inflate(incomingLayoutId, parent, false)
                 IncomingMessageViewHolder(view)
             }
             VIEW_TYPE_OUTGOING -> {
                 val view = LayoutInflater.from(parent.context)
-                    .inflate(R.layout.item_message_out, parent, false)
+                    .inflate(outgoingLayoutId, parent, false)
                 OutgoingMessageViewHolder(view)
             }
             else -> throw IllegalArgumentException("Invalid view type")
@@ -61,12 +62,12 @@ class MessageAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     // Incoming message view holder
     class IncomingMessageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val messageText: TextView = itemView.findViewById(R.id.messageText)
-        private val timestampText: TextView = itemView.findViewById(R.id.timestampText)
+        private val messageText: TextView? = itemView.findViewById(android.R.id.text1)
+        private val timestampText: TextView? = itemView.findViewById(android.R.id.text2)
 
         fun bind(message: Message) {
-            messageText.text = message.message
-            timestampText.text = formatTime(message.timestamp)
+            messageText?.text = message.message
+            timestampText?.text = formatTime(message.timestamp)
         }
 
         private fun formatTime(timestamp: Date): String {
@@ -87,12 +88,12 @@ class MessageAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     // Outgoing message view holder
     class OutgoingMessageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val messageText: TextView = itemView.findViewById(R.id.messageText)
-        private val timestampText: TextView = itemView.findViewById(R.id.timestampText)
+        private val messageText: TextView? = itemView.findViewById(android.R.id.text1)
+        private val timestampText: TextView? = itemView.findViewById(android.R.id.text2)
 
         fun bind(message: Message) {
-            messageText.text = message.message
-            timestampText.text = formatTime(message.timestamp)
+            messageText?.text = message.message
+            timestampText?.text = formatTime(message.timestamp)
         }
 
         private fun formatTime(timestamp: Date): String {

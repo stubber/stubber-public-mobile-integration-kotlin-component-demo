@@ -1,4 +1,4 @@
-package com.example.kotlinchat
+package com.stubber.stubberchatsdk.chat
 
 import android.os.Bundle
 import android.text.Editable
@@ -7,26 +7,19 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.EditText
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.kotlinchat.adapter.MessageAdapter
-import com.example.kotlinchat.config.Environment
-import com.example.kotlinchat.databinding.ActivityChatBinding
-import com.example.kotlinchat.services.ChatService
-import com.example.kotlinchat.viewmodel.MessageViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.stubber.stubberchatsdk.R
 import org.json.JSONArray
 import org.json.JSONObject
 
 class ChatActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityChatBinding
     private lateinit var messageAdapter: MessageAdapter
     private lateinit var chatService: ChatService
-
-    private val messageViewModel: MessageViewModel by viewModels()
+    private lateinit var messageViewModel: MessageViewModel
 
     companion object {
         private const val TAG = "ChatActivity"
@@ -34,18 +27,22 @@ class ChatActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_chat)
 
-        // Print environment info
-        Environment.printEnvironmentInfo()
-
-        binding = ActivityChatBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-        setSupportActionBar(binding.toolbar)
+        // Setup toolbar
+        val toolbar = findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar)
+        setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.title = "Chat"
 
-        // Initialize service
-        chatService = ChatService.getInstance(this)
+        // Get configuration from SDK
+        val config = StubberChatSDK.getConfig()
+
+        // Initialize SDK service
+        chatService = ChatService.getInstance(this, config)
+
+        // Initialize ViewModel
+        messageViewModel = MessageViewModel(application, chatService)
 
         // Setup RecyclerView
         setupRecyclerView()
@@ -68,7 +65,10 @@ class ChatActivity : AppCompatActivity() {
 
     private fun setupRecyclerView() {
         val recyclerView = findViewById<RecyclerView>(R.id.messagesRecyclerView)
-        messageAdapter = MessageAdapter()
+        messageAdapter = MessageAdapter(
+            R.layout.item_message_in,
+            R.layout.item_message_out
+        )
         recyclerView.apply {
             adapter = messageAdapter
             layoutManager = LinearLayoutManager(this@ChatActivity).apply {

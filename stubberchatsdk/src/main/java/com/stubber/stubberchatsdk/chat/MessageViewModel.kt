@@ -1,4 +1,4 @@
-package com.example.kotlinchat.viewmodel
+package com.stubber.stubberchatsdk.chat
 
 import android.app.Application
 import android.util.Log
@@ -6,14 +6,13 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.kotlinchat.models.Message
-import com.example.kotlinchat.models.MessageDirection
-import com.example.kotlinchat.services.ChatService
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 
-class MessageViewModel(application: Application) : AndroidViewModel(application) {
-    private val chatService = ChatService.getInstance(application)
+class MessageViewModel(
+    application: Application,
+    private val chatService: ChatService
+) : AndroidViewModel(application) {
 
     private val _messages = MutableLiveData<List<Message>>(emptyList())
     val messages: LiveData<List<Message>> = _messages
