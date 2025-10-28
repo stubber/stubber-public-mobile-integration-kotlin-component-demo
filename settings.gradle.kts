@@ -21,4 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "kotlin chat"
 include(":app")
-include(":stubberchatsdk")
+include(":stubbersdk")
