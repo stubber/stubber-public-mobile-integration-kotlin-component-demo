@@ -1,37 +1,6 @@
-package com.stubber.stubbersdk.stubberchat
+package com.stubber.stubbersdk.stubberchat.models
 
 import java.util.Date
-
-enum class MessageDirection {
-    INCOMING, OUTGOING
-}
-
-data class Attachment(
-    val filename: String,
-    val originalname: String,
-    val fileuuid: String,
-    val contentType: String
-) {
-    fun toMap(): Map<String, Any> {
-        return mapOf(
-            "filename" to filename,
-            "originalname" to originalname,
-            "fileuuid" to fileuuid,
-            "contentType" to contentType
-        )
-    }
-
-    companion object {
-        fun fromMap(map: Map<String, Any>): Attachment {
-            return Attachment(
-                filename = map["filename"] as? String ?: "",
-                originalname = map["originalname"] as? String ?: "",
-                fileuuid = map["fileuuid"] as? String ?: "",
-                contentType = map["contentType"] as? String ?: ""
-            )
-        }
-    }
-}
 
 data class Message(
     val direction: MessageDirection,

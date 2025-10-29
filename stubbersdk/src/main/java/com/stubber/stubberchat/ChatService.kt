@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.stubber.stubbersdk.stubberchat.models.Message
 import io.socket.client.IO
 import io.socket.client.Socket
 import org.json.JSONObject

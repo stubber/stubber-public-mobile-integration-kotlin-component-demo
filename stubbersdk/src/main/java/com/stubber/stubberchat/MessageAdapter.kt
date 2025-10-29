@@ -9,6 +9,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.stubber.stubbersdk.R
+import com.stubber.stubbersdk.stubberchat.models.Message
+import com.stubber.stubbersdk.stubberchat.models.MessageDirection
 import java.util.Date
 import java.util.concurrent.TimeUnit
 

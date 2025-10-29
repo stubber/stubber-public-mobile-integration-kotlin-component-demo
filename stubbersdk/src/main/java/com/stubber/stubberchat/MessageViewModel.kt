@@ -6,6 +6,9 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.stubber.stubbersdk.stubberchat.models.Attachment
+import com.stubber.stubbersdk.stubberchat.models.Message
+import com.stubber.stubbersdk.stubberchat.models.MessageDirection
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 

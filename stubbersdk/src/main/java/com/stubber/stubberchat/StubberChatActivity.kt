@@ -1,5 +1,8 @@
 package com.stubber.stubbersdk.stubberchat
 
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -7,13 +10,22 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.EditText
+import android.widget.ImageButton
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.stubber.stubbersdk.R
+import com.stubber.stubbersdk.stubberchat.models.FilePreviewItem
+import com.stubber.stubbersdk.stubberchat.models.Message
+import com.stubber.stubbersdk.stubberchat.models.MessageDirection
+import com.stubber.stubbersdk.stubberchat.models.OutgoingPayload
+import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -22,6 +34,38 @@ class StubberChatActivity : AppCompatActivity() {
     private lateinit var messageAdapter: MessageAdapter
     private lateinit var chatService: ChatService
     private lateinit var messageViewModel: MessageViewModel
+    private lateinit var fileUploadService: FileUploadService
+    private lateinit var filePreviewAdapter: FilePreviewAdapter
+    private var selectedFiles: MutableList<Uri> = mutableListOf()
+    private var filePreviewItems: MutableList<FilePreviewItem> = mutableListOf()
+
+    private val filePickerLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val data = result.data
+            val uris = mutableListOf<Uri>()
+
+            // Handle multiple files
+            data?.clipData?.let { clipData ->
+                for (i in 0 until clipData.itemCount) {
+                    clipData.getItemAt(i).uri?.let { uri ->
+                        uris.add(uri)
+                    }
+                }
+            } ?: data?.data?.let { uri ->
+                // Handle single file
+                uris.add(uri)
+            }
+
+            if (uris.isNotEmpty()) {
+                selectedFiles.addAll(uris)
+                filePreviewItems.addAll(uris.map { FilePreviewItem(it) })
+                updateFilePreview()
+                Toast.makeText(this, "${uris.size} file(s) selected", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 
     companion object {
         private const val TAG = "StubberChatActivity"
@@ -58,11 +102,17 @@ class StubberChatActivity : AppCompatActivity() {
         // Initialize SDK service
         chatService = ChatService.getInstance(this, config)
 
+        // Initialize file upload service
+        fileUploadService = FileUploadService(this, config)
+
         // Initialize ViewModel
         messageViewModel = MessageViewModel(application, chatService)
 
         // Setup RecyclerView
         setupRecyclerView()
+
+        // Setup file preview
+        setupFilePreview()
 
         // Setup message input
         setupMessageInput()
@@ -94,12 +144,47 @@ class StubberChatActivity : AppCompatActivity() {
         }
     }
 
+    private fun setupFilePreview() {
+        val previewRecyclerView = findViewById<RecyclerView>(R.id.selectedFilesPreview)
+        filePreviewAdapter = FilePreviewAdapter { position ->
+            // Remove file at position
+            if (position < selectedFiles.size && position < filePreviewItems.size) {
+                selectedFiles.removeAt(position)
+                filePreviewItems.removeAt(position)
+                updateFilePreview()
+            }
+        }
+        previewRecyclerView.apply {
+            adapter = filePreviewAdapter
+            layoutManager = LinearLayoutManager(
+                this@StubberChatActivity,
+                LinearLayoutManager.HORIZONTAL,
+                false
+            )
+        }
+    }
+
+    private fun updateFilePreview() {
+        val previewRecyclerView = findViewById<RecyclerView>(R.id.selectedFilesPreview)
+        filePreviewAdapter.submitList(filePreviewItems.toList())
+        previewRecyclerView.visibility = if (filePreviewItems.isNotEmpty()) {
+            android.view.View.VISIBLE
+        } else {
+            android.view.View.GONE
+        }
+    }
+
     private fun setupMessageInput() {
         val messageEditText = findViewById<EditText>(R.id.messageEditText)
         val sendButton = findViewById<FloatingActionButton>(R.id.sendButton)
+        val attachButton = findViewById<ImageButton>(R.id.attachButton)
 
         sendButton.setOnClickListener {
             sendMessage()
+        }
+
+        attachButton.setOnClickListener {
+            openFilePicker()
         }
 
         messageEditText.addTextChangedListener(object : TextWatcher {
@@ -109,6 +194,15 @@ class StubberChatActivity : AppCompatActivity() {
                 // Could update send button state here
             }
         })
+    }
+
+    private fun openFilePicker() {
+        val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
+            type = "*/*"
+            putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+            addCategory(Intent.CATEGORY_OPENABLE)
+        }
+        filePickerLauncher.launch(Intent.createChooser(intent, "Select files"))
     }
 
     private fun setupSocketListeners() {
@@ -136,30 +230,68 @@ class StubberChatActivity : AppCompatActivity() {
         val messageEditText = findViewById<EditText>(R.id.messageEditText)
         val messageText = messageEditText.text.toString().trim()
 
-        if (messageText.isNotEmpty()) {
-            messageViewModel.addOutgoingMessage(messageText)
+        if (messageText.isEmpty() && selectedFiles.isEmpty()) {
+            return
+        }
 
-            // Get connection params from storage
-            val connectionParams = chatService.getConnectionParams()
+        lifecycleScope.launch {
+            try {
+                // Upload files if any are selected
+                val attachments = if (selectedFiles.isNotEmpty()) {
+                    Toast.makeText(this@StubberChatActivity, "Uploading files...", Toast.LENGTH_SHORT).show()
+                    val uploadedAttachments = fileUploadService.uploadFiles(selectedFiles)
 
-            // Build the payload
-            val payload = JSONObject().apply {
-                connectionParams.forEach { (key, value) ->
-                    put(key, value)
+                    // Update preview items with uploaded attachments
+                    filePreviewItems.clear()
+                    selectedFiles.forEachIndexed { index, uri ->
+                        if (index < uploadedAttachments.size) {
+                            filePreviewItems.add(FilePreviewItem(uri, uploadedAttachments[index]))
+                        }
+                    }
+                    updateFilePreview()
+
+                    uploadedAttachments
+                } else {
+                    emptyList()
                 }
-                put("message", messageText)
-                put("data", messageText)
-                put("type", "text")
-                put("attachments", JSONArray())
+
+                // Add message to UI
+                val message = Message(
+                    direction = MessageDirection.OUTGOING,
+                    message = messageText,
+                    attachments = attachments
+                )
+                messageViewModel.addMessage(message)
+
+                // Get connection params from storage
+                val connectionParams = chatService.getConnectionParams()
+
+                // Build the payload using OutgoingPayload model
+                val outgoingPayload = OutgoingPayload.create(
+                    connectionParams = connectionParams,
+                    message = messageText,
+                    attachments = attachments
+                )
+                val payload = outgoingPayload.toJson()
+
+                Log.d(TAG, "Sending payload: $payload")
+
+                // Emit the message via socket
+                chatService.emit("payload", payload)
+
+                // Clear input and preview
+                messageEditText.text.clear()
+                selectedFiles.clear()
+                filePreviewItems.clear()
+                updateFilePreview()
+
+                if (attachments.isNotEmpty()) {
+                    Toast.makeText(this@StubberChatActivity, "Message sent", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error sending message", e)
+                Toast.makeText(this@StubberChatActivity, "Failed to send message", Toast.LENGTH_SHORT).show()
             }
-
-            Log.d(TAG, "Sending payload: $payload")
-
-            // Emit the message via socket
-            chatService.emit("payload", payload)
-
-            // Clear input
-            messageEditText.text.clear()
         }
     }
 
