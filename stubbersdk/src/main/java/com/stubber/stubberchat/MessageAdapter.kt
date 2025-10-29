@@ -3,8 +3,12 @@ package com.stubber.stubbersdk.stubberchat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
+import com.stubber.stubbersdk.R
 import java.util.Date
 import java.util.concurrent.TimeUnit
 
@@ -62,12 +66,48 @@ class MessageAdapter(
 
     // Incoming message view holder
     class IncomingMessageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val messageText: TextView? = itemView.findViewById(com.stubber.stubbersdk.R.id.messageText)
-        private val timestampText: TextView? = itemView.findViewById(com.stubber.stubbersdk.R.id.timestampText)
+        private val messageText: TextView? = itemView.findViewById(R.id.messageText)
+        private val timestampText: TextView? = itemView.findViewById(R.id.timestampText)
+        private val attachmentsContainer: LinearLayout? = itemView.findViewById(R.id.attachmentsContainer)
 
         fun bind(message: Message) {
-            messageText?.text = message.message
+            // Set message text
+            if (message.message.isNotEmpty()) {
+                messageText?.visibility = View.VISIBLE
+                messageText?.text = message.message
+            } else {
+                messageText?.visibility = View.GONE
+            }
+
             timestampText?.text = formatTime(message.timestamp)
+
+            // Display attachments
+            attachmentsContainer?.removeAllViews()
+            if (message.attachments.isNotEmpty()) {
+                attachmentsContainer?.visibility = View.VISIBLE
+                message.attachments.forEach { attachment ->
+                    if (attachment.contentType.startsWith("image/")) {
+                        val imageView = ImageView(itemView.context).apply {
+                            layoutParams = LinearLayout.LayoutParams(
+                                LinearLayout.LayoutParams.MATCH_PARENT,
+                                400
+                            ).apply {
+                                setMargins(0, 8, 0, 8)
+                            }
+                            scaleType = ImageView.ScaleType.CENTER_CROP
+                        }
+                        val imageUrl = "${Environment.fileServerUrl}/${attachment.fileuuid}"
+                        imageView.load(imageUrl) {
+                            crossfade(true)
+                            placeholder(android.R.drawable.ic_menu_gallery)
+                            error(android.R.drawable.ic_menu_report_image)
+                        }
+                        attachmentsContainer?.addView(imageView)
+                    }
+                }
+            } else {
+                attachmentsContainer?.visibility = View.GONE
+            }
         }
 
         private fun formatTime(timestamp: Date): String {
@@ -88,12 +128,48 @@ class MessageAdapter(
 
     // Outgoing message view holder
     class OutgoingMessageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val messageText: TextView? = itemView.findViewById(com.stubber.stubbersdk.R.id.messageText)
-        private val timestampText: TextView? = itemView.findViewById(com.stubber.stubbersdk.R.id.timestampText)
+        private val messageText: TextView? = itemView.findViewById(R.id.messageText)
+        private val timestampText: TextView? = itemView.findViewById(R.id.timestampText)
+        private val attachmentsContainer: LinearLayout? = itemView.findViewById(R.id.attachmentsContainer)
 
         fun bind(message: Message) {
-            messageText?.text = message.message
+            // Set message text
+            if (message.message.isNotEmpty()) {
+                messageText?.visibility = View.VISIBLE
+                messageText?.text = message.message
+            } else {
+                messageText?.visibility = View.GONE
+            }
+
             timestampText?.text = formatTime(message.timestamp)
+
+            // Display attachments
+            attachmentsContainer?.removeAllViews()
+            if (message.attachments.isNotEmpty()) {
+                attachmentsContainer?.visibility = View.VISIBLE
+                message.attachments.forEach { attachment ->
+                    if (attachment.contentType.startsWith("image/")) {
+                        val imageView = ImageView(itemView.context).apply {
+                            layoutParams = LinearLayout.LayoutParams(
+                                LinearLayout.LayoutParams.MATCH_PARENT,
+                                400
+                            ).apply {
+                                setMargins(0, 8, 0, 8)
+                            }
+                            scaleType = ImageView.ScaleType.CENTER_CROP
+                        }
+                        val imageUrl = "${Environment.fileServerUrl}/${attachment.fileuuid}"
+                        imageView.load(imageUrl) {
+                            crossfade(true)
+                            placeholder(android.R.drawable.ic_menu_gallery)
+                            error(android.R.drawable.ic_menu_report_image)
+                        }
+                        attachmentsContainer?.addView(imageView)
+                    }
+                }
+            } else {
+                attachmentsContainer?.visibility = View.GONE
+            }
         }
 
         private fun formatTime(timestamp: Date): String {

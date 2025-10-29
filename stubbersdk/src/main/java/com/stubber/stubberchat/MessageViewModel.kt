@@ -34,10 +34,30 @@ class MessageViewModel(
 
     fun addIncomingMessage(payload: JSONObject) {
         val messageText = payload.optString("data", "")
-        if (messageText.isNotEmpty()) {
+
+        // Parse attachments
+        val attachments = mutableListOf<Attachment>()
+        val attachmentsArray = payload.optJSONArray("attachments")
+        if (attachmentsArray != null) {
+            for (i in 0 until attachmentsArray.length()) {
+                val attachmentObj = attachmentsArray.optJSONObject(i)
+                if (attachmentObj != null) {
+                    val attachment = Attachment(
+                        filename = attachmentObj.optString("filename", ""),
+                        originalname = attachmentObj.optString("originalname", ""),
+                        fileuuid = attachmentObj.optString("fileuuid", ""),
+                        contentType = attachmentObj.optString("contentType", "")
+                    )
+                    attachments.add(attachment)
+                }
+            }
+        }
+
+        if (messageText.isNotEmpty() || attachments.isNotEmpty()) {
             val message = Message(
                 direction = MessageDirection.INCOMING,
-                message = messageText
+                message = messageText,
+                attachments = attachments
             )
             addMessage(message)
         }
