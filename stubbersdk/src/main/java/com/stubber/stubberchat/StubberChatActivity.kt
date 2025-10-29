@@ -8,6 +8,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -29,9 +31,24 @@ class StubberChatActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
 
+        // Handle keyboard insets
+        val contentView = findViewById<android.view.View>(R.id.contentChat)
+        ViewCompat.setOnApplyWindowInsetsListener(contentView) { view, insets ->
+            val imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime())
+            val systemBarsInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+
+            view.setPadding(
+                systemBarsInsets.left,
+                systemBarsInsets.top,
+                systemBarsInsets.right,
+                imeInsets.bottom
+            )
+            insets
+        }
+
         // Setup toolbar
-        // val toolbar = findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar)
-        // setSupportActionBar(toolbar)
+        val toolbar = findViewById<com.google.android.material.appbar.MaterialToolbar>(R.id.toolbar)
+        setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title = "Chat"
 

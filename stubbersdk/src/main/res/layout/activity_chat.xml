@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".StubberChatActivity">
 
-    <!-- <com.google.android.material.appbar.AppBarLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true">
@@ -15,11 +15,13 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/primary"
-            app:titleTextColor="@color/black"
+            android:background="@android:color/black"
+            android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light"
+            app:titleTextColor="@android:color/white"
             app:title="Chat" />
 
-    </com.google.android.material.appbar.AppBarLayout> -->
+    </com.google.android.material.appbar.AppBarLayout>
 
     <include
         android:id="@+id/contentChat"

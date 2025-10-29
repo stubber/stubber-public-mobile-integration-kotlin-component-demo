@@ -6,7 +6,12 @@
         <activity
             android:name=".stubberchat.StubberChatActivity"
             android:exported="true"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
-            android:windowSoftInputMode="adjustResize" />
+            android:theme="@style/Theme.StubberSDK"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
     </application>
 </manifest>

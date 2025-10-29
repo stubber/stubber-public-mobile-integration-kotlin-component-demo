@@ -62,8 +62,8 @@ class MessageAdapter(
 
     // Incoming message view holder
     class IncomingMessageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val messageText: TextView? = itemView.findViewById(android.R.id.text1)
-        private val timestampText: TextView? = itemView.findViewById(android.R.id.text2)
+        private val messageText: TextView? = itemView.findViewById(com.stubber.stubbersdk.R.id.messageText)
+        private val timestampText: TextView? = itemView.findViewById(com.stubber.stubbersdk.R.id.timestampText)
 
         fun bind(message: Message) {
             messageText?.text = message.message
@@ -88,8 +88,8 @@ class MessageAdapter(
 
     // Outgoing message view holder
     class OutgoingMessageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val messageText: TextView? = itemView.findViewById(android.R.id.text1)
-        private val timestampText: TextView? = itemView.findViewById(android.R.id.text2)
+        private val messageText: TextView? = itemView.findViewById(com.stubber.stubbersdk.R.id.messageText)
+        private val timestampText: TextView? = itemView.findViewById(com.stubber.stubbersdk.R.id.timestampText)
 
         fun bind(message: Message) {
             messageText?.text = message.message

@@ -14,9 +14,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Initialize the Chat SDK
-        StubberChatSDK.initialize()
-
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 

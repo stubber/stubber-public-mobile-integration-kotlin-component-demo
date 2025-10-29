@@ -1,0 +1,6 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base theme for SDK (dark mode) -->
+    <style name="Base.Theme.StubberSDK" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your dark theme here. -->
+    </style>
+</resources>
