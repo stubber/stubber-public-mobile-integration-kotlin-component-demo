@@ -4,18 +4,14 @@ import android.content.Context
 import android.content.Intent
 
 object StubberChatSDK {
-    /**
-     * Get the current configuration
-     */
-    internal fun getConfig(): ChatConfig {
-        return Environment
-    }
+    const val EXTRA_CHAT_CONFIG = "extra_chat_config"
 
     /**
-     * Launch the chat activity
+     * Launch the chat activity with the provided configuration
      */
-    fun startChat(context: Context) {
+    fun startChat(context: Context, config: ChatConfig) {
         val intent = Intent(context, StubberChatActivity::class.java)
+        intent.putExtra(EXTRA_CHAT_CONFIG, config)
         context.startActivity(intent)
     }
 }

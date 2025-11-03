@@ -1,6 +1,7 @@
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
+    id("kotlin-parcelize")
 }
 
 android {
@@ -62,6 +63,9 @@ dependencies {
 
     // OkHttp for file uploads
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
+
+    // Markwon for markdown rendering
+    implementation("io.noties.markwon:core:4.6.2")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -11,7 +11,8 @@ import com.stubber.stubbersdk.R
 import com.stubber.stubbersdk.stubberchat.models.FilePreviewItem
 
 class FilePreviewAdapter(
-    private val onRemoveClick: (Int) -> Unit
+    private val onRemoveClick: (Int) -> Unit,
+    private val fileServerUrl: String
 ) : RecyclerView.Adapter<FilePreviewAdapter.PreviewViewHolder>() {
 
     private val items = mutableListOf<FilePreviewItem>()
@@ -42,7 +43,7 @@ class FilePreviewAdapter(
             // Load image from URI or attachment
             if (item.attachment != null) {
                 // File has been uploaded, show from server
-                val imageUrl = "${Environment.fileServerUrl}/${item.attachment.fileuuid}"
+                val imageUrl = "${fileServerUrl}/${item.attachment.fileuuid}"
                 imageView.load(imageUrl) {
                     crossfade(true)
                     placeholder(android.R.drawable.ic_menu_gallery)

@@ -131,8 +131,9 @@ class ChatService private constructor(
                 if (data != null) {
                     Log.d(TAG, "Payload received: $data")
 
-                    if (data.has("data") && data.optString("type") == "text") {
-                        Log.d(TAG, "Incoming message: ${data.optString("data")}")
+                    val messageType = data.optString("type")
+                    if (data.has("data") && (messageType == "text" || messageType == "markdown")) {
+                        Log.d(TAG, "Incoming message (${messageType}): ${data.optString("data")}")
                         messageCallback?.invoke(data)
                     }
                 }
@@ -223,8 +224,8 @@ class ChatService private constructor(
         return try {
             val params = mutableMapOf<String, String>()
 
-            // Profile code and UUID come from config
-            params["profileuuid"] = config.profileUuid
+            // Profile code and branch come from config
+            params["profile_code"] = config.profileCode
             params["branch"] = config.profileBranch
 
             // Session UUID comes from storage
@@ -237,7 +238,7 @@ class ChatService private constructor(
             params
         } catch (e: Exception) {
             Log.e(TAG, "Error getting connection params", e)
-            mapOf("profileuuid" to config.profileUuid, "branch" to config.profileBranch)
+            mapOf("profile_code" to config.profileCode, "branch" to config.profileBranch)
         }
     }
 

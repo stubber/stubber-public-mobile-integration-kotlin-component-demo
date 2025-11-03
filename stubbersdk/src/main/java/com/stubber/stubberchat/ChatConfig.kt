@@ -1,43 +1,16 @@
 package com.stubber.stubbersdk.stubberchat
 
-import android.util.Log
-import com.stubber.stubbersdk.BuildConfig
+import android.graphics.Color
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
-interface ChatConfig {
-    val serverUrl: String
-    val profileUuid: String
-    val profileBranch: String
-}
-
-object Environment : ChatConfig {
-    // Dev config
-    override val serverUrl: String = "http://192.168.254.32:6020"
-    val fileServerUrl: String = "https://app.dev.stubber.com/api/fileserver/file"
-    val profileCode: String = ""
-    override val profileUuid: String = "0627d28a-96a7-5a39-a2e7-4c0207f8d3be"
-
-    // override val serverUrl: String = "https://api.stubber.zone:6020"
-    // val fileServerUrl: String = "https://app.stubber.com/api/fileserver/file"
-    // val profileCode: String = ""
-    // override val profileUuid: String = "c8e70d1a-145f-5a22-9d4b-beb7b66a0a99"
-
-
-    override val profileBranch: String = if (BuildConfig.DEBUG) {
-        "draft"
-    } else {
-        "live"
-    }
-
-    fun printEnvironmentInfo() {
-        if (BuildConfig.DEBUG) {
-            Log.d("Environment", "=== Environment Configuration ===")
-            Log.d("Environment", "Server URL: $serverUrl")
-            // Log.d("Environment", "File Server URL: $fileServerUrl")
-            Log.d("Environment", "Profile Code: $profileCode")
-            Log.d("Environment", "Profile UUID: $profileUuid")
-            Log.d("Environment", "Profile branch: $profileBranch")
-            Log.d("Environment", "Debug Mode: ${BuildConfig.DEBUG}")
-            Log.d("Environment", "================================")
-        }
-    }
-}
+@Parcelize
+data class ChatConfig(
+    val serverUrl: String,
+    val fileServerUrl: String,
+    val profileCode: String,
+    val profileBranch: String,
+    val backgroundColor: Int = Color.parseColor("#ECE5DD"),
+    val primaryColor: Int = Color.parseColor("#DCF415"),
+    val chatTitle: String = "Sanlam"
+) : Parcelable

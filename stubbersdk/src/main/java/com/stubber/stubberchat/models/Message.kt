@@ -6,7 +6,8 @@ data class Message(
     val direction: MessageDirection,
     val message: String,
     val attachments: List<Attachment> = emptyList(),
-    val timestamp: Date = Date()
+    val timestamp: Date = Date(),
+    val type: String = "text"
 ) {
     val isIncoming: Boolean
         get() = direction == MessageDirection.INCOMING
@@ -19,7 +20,8 @@ data class Message(
             "direction" to direction.name,
             "message" to message,
             "attachments" to attachments.map { it.toMap() },
-            "timestamp" to timestamp.time
+            "timestamp" to timestamp.time,
+            "type" to type
         )
     }
 
@@ -44,7 +46,8 @@ data class Message(
                 direction = MessageDirection.valueOf(map["direction"] as String),
                 message = map["message"] as String,
                 attachments = attachmentsList,
-                timestamp = Date(timestampLong)
+                timestamp = Date(timestampLong),
+                type = (map["type"] as? String) ?: "text"
             )
         }
     }

@@ -60,7 +60,8 @@ class MessageViewModel(
             val message = Message(
                 direction = MessageDirection.INCOMING,
                 message = messageText,
-                attachments = attachments
+                attachments = attachments,
+                type = payload.optString("type", "text")
             )
             addMessage(message)
         }

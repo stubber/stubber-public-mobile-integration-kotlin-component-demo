@@ -26,57 +26,104 @@
         android:orientation="horizontal"
         android:padding="8dp"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/messageInputContainer"
+        app:layout_constraintBottom_toTopOf="@+id/inputBarContainer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <LinearLayout
-        android:id="@+id/messageInputContainer"
+        android:id="@+id/inputBarContainer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:background="#F0F0F0"
-        android:orientation="horizontal"
-        android:padding="8dp"
-        android:gravity="center_vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <ImageButton
-            android:id="@+id/attachButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginEnd="8dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_attach"
-            android:contentDescription="Attach file" />
-
-        <EditText
-            android:id="@+id/messageEditText"
-            android:layout_width="0dp"
+        <!-- Message input bar -->
+        <LinearLayout
+            android:id="@+id/messageInputContainer"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/bg_input_field"
-            android:hint="Message"
-            android:maxLines="5"
-            android:minHeight="40dp"
-            android:padding="12dp"
-            android:textSize="16sp"
-            android:textColor="#000000"
-            android:inputType="textCapSentences|textMultiLine" />
+            android:orientation="horizontal"
+            android:padding="8dp"
+            android:gravity="center_vertical">
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/sendButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:src="@drawable/ic_send"
-            android:backgroundTint="@color/primary"
-            app:tint="@color/black"
-            app:fabSize="mini"
-            app:elevation="0dp"
-            app:pressedTranslationZ="0dp"
-            android:contentDescription="Send message" />
+            <EditText
+                android:id="@+id/messageEditText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/bg_input_field"
+                android:hint="Message"
+                android:maxLines="5"
+                android:minHeight="40dp"
+                android:padding="12dp"
+                android:textSize="16sp"
+                android:textColor="#000000"
+                android:inputType="textCapSentences|textMultiLine" />
+
+            <LinearLayout
+                android:id="@+id/recordingContainer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/bg_input_field"
+                android:minHeight="40dp"
+                android:padding="12dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_mic"
+                    android:layout_marginEnd="8dp"
+                    android:contentDescription="Recording" />
+
+                <TextView
+                    android:id="@+id/recordingTimer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0:00"
+                    android:textSize="16sp"
+                    android:textColor="#000000" />
+
+            </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/cancelRecordingButton"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_menu_close_clear_cancel"
+                android:visibility="gone"
+                android:contentDescription="Cancel recording" />
+
+            <ImageButton
+                android:id="@+id/attachButton"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_attach"
+                android:contentDescription="Attach file" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/sendButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:src="@drawable/ic_mic"
+                app:tint="@android:color/white"
+                app:fabSize="mini"
+                app:elevation="0dp"
+                app:pressedTranslationZ="0dp"
+                android:contentDescription="Send or record" />
+        </LinearLayout>
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
