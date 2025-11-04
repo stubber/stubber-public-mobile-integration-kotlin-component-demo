@@ -24,8 +24,11 @@ class MainActivity : AppCompatActivity() {
     // Server configurations
     companion object {
         // Debug build config
-        private const val DEBUG_SERVER_URL = "http://192.168.254.32:6020"
-        private const val DEBUG_FILE_SERVER_URL = "https://app.dev.stubber.com/api/fileserver/file"
+        // private const val DEBUG_SERVER_URL = "http://192.168.254.32:6020"
+        // private const val DEBUG_FILE_SERVER_URL = "https://app.dev.stubber.com/api/fileserver/file"
+        private const val DEBUG_SERVER_URL = "https://api.stubber.zone:6020"
+        private const val DEBUG_FILE_SERVER_URL = "https://app.stubber.com/api/fileserver/file"
+
 
         // Release build config
         private const val RELEASE_SERVER_URL = "https://api.stubber.zone:6020"
