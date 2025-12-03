@@ -35,8 +35,24 @@ class ChatService private constructor(
         private var instance: ChatService? = null
 
         fun getInstance(context: Context, config: ChatConfig): ChatService {
-            return instance ?: synchronized(this) {
-                instance ?: ChatService(context.applicationContext, config).also { instance = it }
+            return synchronized(this) {
+                val currentInstance = instance
+
+                // If instance exists and config has changed, disconnect and recreate
+                if (currentInstance != null &&
+                    (currentInstance.config.profileCode != config.profileCode ||
+                     currentInstance.config.profileBranch != config.profileBranch ||
+                     currentInstance.config.serverUrl != config.serverUrl)) {
+                    Log.d(TAG, "Config changed (old: ${currentInstance.config.profileCode}/${currentInstance.config.profileBranch}, new: ${config.profileCode}/${config.profileBranch}), clearing session and recreating")
+                    currentInstance.disconnect()
+                    currentInstance.clearAll() // Clear old session and messages
+                    instance = null
+                }
+
+                instance ?: ChatService(context.applicationContext, config).also {
+                    instance = it
+                    Log.d(TAG, "Created ChatService with profileCode: ${config.profileCode}, branch: ${config.profileBranch}")
+                }
             }
         }
     }

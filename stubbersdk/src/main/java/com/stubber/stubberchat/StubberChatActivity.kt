@@ -100,6 +100,8 @@ class StubberChatActivity : AppCompatActivity() {
     companion object {
         private const val TAG = "StubberChatActivity"
         private const val RECORD_AUDIO_PERMISSION_CODE = 101
+
+        private var currentInstance: StubberChatActivity? = null
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
