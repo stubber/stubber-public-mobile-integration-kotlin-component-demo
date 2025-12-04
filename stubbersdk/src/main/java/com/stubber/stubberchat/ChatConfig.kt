@@ -11,6 +11,12 @@ data class ChatConfig(
     val profileCode: String,
     val profileBranch: String,
     val backgroundColor: Int = Color.parseColor("#ECE5DD"),
-    val primaryColor: Int = Color.parseColor("#DCF415"),
-    val chatTitle: String = "Sanlam"
+    val actionBarColor: Int = Color.parseColor("#0845a6"),
+    val sendButtonColor: Int = Color.parseColor("#DCF415"),
+    val chatTitle: String = "Sanlam",
+    val outgoingBubbleColor: Int = Color.parseColor("#DCF415"),
+    val outgoingTextColor: Int = Color.parseColor("#000000"),
+    val incomingBubbleColor: Int = Color.parseColor("#FFFFFF"),
+    val incomingTextColor: Int = Color.parseColor("#000000"),
+    val actionBarTextColor: Int = Color.parseColor("#FFFFFF")
 ) : Parcelable

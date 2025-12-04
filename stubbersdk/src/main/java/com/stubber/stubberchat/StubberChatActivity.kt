@@ -113,7 +113,8 @@ class StubberChatActivity : AppCompatActivity() {
             ?: throw IllegalStateException("ChatConfig is required to start StubberChatActivity")
 
         val backgroundColor = config.backgroundColor
-        val primaryColor = config.primaryColor
+        val actionBarColor = config.actionBarColor
+        val sendButtonColor = config.sendButtonColor
         val chatTitle = config.chatTitle
 
         // Handle keyboard insets
@@ -140,9 +141,13 @@ class StubberChatActivity : AppCompatActivity() {
         val toolbar = findViewById<com.google.android.material.appbar.MaterialToolbar>(R.id.toolbar)
         val appBarLayout = findViewById<com.google.android.material.appbar.AppBarLayout>(R.id.appBarLayout)
 
-        // Apply primary color to both toolbar and app bar
-        toolbar.setBackgroundColor(primaryColor)
-        appBarLayout?.setBackgroundColor(primaryColor)
+        // Apply action bar color to both toolbar and app bar
+        toolbar.setBackgroundColor(actionBarColor)
+        appBarLayout?.setBackgroundColor(actionBarColor)
+
+        // Apply action bar text color
+        toolbar.setTitleTextColor(config.actionBarTextColor)
+        toolbar.setNavigationIconTint(config.actionBarTextColor)
 
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -158,13 +163,13 @@ class StubberChatActivity : AppCompatActivity() {
         messageViewModel = MessageViewModel(application, chatService)
 
         // Setup RecyclerView
-        setupRecyclerView(primaryColor)
+        setupRecyclerView()
 
         // Setup file preview
         setupFilePreview()
 
         // Setup message input
-        setupMessageInput(primaryColor)
+        setupMessageInput(sendButtonColor)
 
         // Setup socket listeners
         setupSocketListeners()
@@ -179,13 +184,16 @@ class StubberChatActivity : AppCompatActivity() {
         chatService.connect()
     }
 
-    private fun setupRecyclerView(primaryColor: Int) {
+    private fun setupRecyclerView() {
         val recyclerView = findViewById<RecyclerView>(R.id.messagesRecyclerView)
         messageAdapter = MessageAdapter(
             R.layout.item_message_in,
             R.layout.item_message_out,
-            primaryColor,
-            config.fileServerUrl
+            config.fileServerUrl,
+            config.outgoingBubbleColor,
+            config.outgoingTextColor,
+            config.incomingBubbleColor,
+            config.incomingTextColor
         )
         recyclerView.apply {
             adapter = messageAdapter
@@ -237,14 +245,14 @@ class StubberChatActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupMessageInput(primaryColor: Int) {
+    private fun setupMessageInput(sendButtonColor: Int) {
         val messageEditText = findViewById<EditText>(R.id.messageEditText)
         val sendButton = findViewById<FloatingActionButton>(R.id.sendButton)
         val attachButton = findViewById<ImageButton>(R.id.attachButton)
         val cancelRecordingButton = findViewById<ImageButton>(R.id.cancelRecordingButton)
 
-        // Apply primary color to send button
-        sendButton.backgroundTintList = android.content.res.ColorStateList.valueOf(primaryColor)
+        // Apply send button color
+        sendButton.backgroundTintList = android.content.res.ColorStateList.valueOf(sendButtonColor)
 
         // Send/Record button - dynamic functionality based on text content
         sendButton.setOnClickListener {
@@ -607,6 +615,13 @@ class StubberChatActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_chat, menu)
+
+        // Apply action bar text color to menu items
+        for (i in 0 until menu.size()) {
+            val menuItem = menu.getItem(i)
+            menuItem.icon?.setTint(config.actionBarTextColor)
+        }
+
         return true
     }
 

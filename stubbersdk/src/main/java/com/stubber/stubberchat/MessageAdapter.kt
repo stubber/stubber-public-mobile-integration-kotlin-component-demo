@@ -24,8 +24,11 @@ import java.util.concurrent.TimeUnit
 class MessageAdapter(
     private val incomingLayoutId: Int,
     private val outgoingLayoutId: Int,
-    private val primaryColor: Int,
-    private val fileServerUrl: String
+    private val fileServerUrl: String,
+    private val outgoingBubbleColor: Int,
+    private val outgoingTextColor: Int,
+    private val incomingBubbleColor: Int,
+    private val incomingTextColor: Int
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val messages = mutableListOf<Message>()
@@ -54,12 +57,12 @@ class MessageAdapter(
             VIEW_TYPE_INCOMING -> {
                 val view = LayoutInflater.from(parent.context)
                     .inflate(incomingLayoutId, parent, false)
-                IncomingMessageViewHolder(view)
+                IncomingMessageViewHolder(view, incomingBubbleColor, incomingTextColor)
             }
             VIEW_TYPE_OUTGOING -> {
                 val view = LayoutInflater.from(parent.context)
                     .inflate(outgoingLayoutId, parent, false)
-                OutgoingMessageViewHolder(view, primaryColor)
+                OutgoingMessageViewHolder(view, outgoingBubbleColor, outgoingTextColor)
             }
             else -> throw IllegalArgumentException("Invalid view type")
         }
@@ -76,10 +79,33 @@ class MessageAdapter(
     override fun getItemCount(): Int = messages.size
 
     // Incoming message view holder
-    inner class IncomingMessageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class IncomingMessageViewHolder(itemView: View, bubbleColor: Int, textColor: Int) : RecyclerView.ViewHolder(itemView) {
         private val messageText: TextView? = itemView.findViewById(R.id.messageText)
         private val timestampText: TextView? = itemView.findViewById(R.id.timestampText)
         private val attachmentsContainer: LinearLayout? = itemView.findViewById(R.id.attachmentsContainer)
+        private val messageBubble: LinearLayout?
+
+        init {
+            // Find the message bubble container
+            messageBubble = messageText?.parent as? LinearLayout
+
+            // Create a GradientDrawable with rounded corners and the bubble color
+            val drawable = GradientDrawable().apply {
+                shape = GradientDrawable.RECTANGLE
+                setColor(bubbleColor)
+                cornerRadii = floatArrayOf(
+                    48f, 48f,  // top-left
+                    48f, 48f,  // top-right
+                    48f, 48f,  // bottom-right
+                    12f, 12f   // bottom-left
+                )
+            }
+
+            // Apply the drawable and text color
+            messageBubble?.background = drawable
+            messageText?.setTextColor(textColor)
+            timestampText?.setTextColor(textColor)
+        }
 
         fun bind(message: Message) {
             // Set message text
@@ -230,7 +256,7 @@ class MessageAdapter(
     }
 
     // Outgoing message view holder
-    inner class OutgoingMessageViewHolder(itemView: View, primaryColor: Int) : RecyclerView.ViewHolder(itemView) {
+    inner class OutgoingMessageViewHolder(itemView: View, bubbleColor: Int, textColor: Int) : RecyclerView.ViewHolder(itemView) {
         private val messageText: TextView? = itemView.findViewById(R.id.messageText)
         private val timestampText: TextView? = itemView.findViewById(R.id.timestampText)
         private val attachmentsContainer: LinearLayout? = itemView.findViewById(R.id.attachmentsContainer)
@@ -240,10 +266,10 @@ class MessageAdapter(
             // Find the message bubble container (the LinearLayout that contains all the message content)
             messageBubble = messageText?.parent as? LinearLayout
 
-            // Create a GradientDrawable with rounded corners and the primary color
+            // Create a GradientDrawable with rounded corners and the bubble color
             val drawable = GradientDrawable().apply {
                 shape = GradientDrawable.RECTANGLE
-                setColor(primaryColor)
+                setColor(bubbleColor)
                 // Set corner radii (top-left, top-right, bottom-right, bottom-left)
                 cornerRadii = floatArrayOf(
                     48f, 48f,  // top-left
@@ -253,8 +279,10 @@ class MessageAdapter(
                 )
             }
 
-            // Apply the drawable to the message bubble
+            // Apply the drawable and text color
             messageBubble?.background = drawable
+            messageText?.setTextColor(textColor)
+            timestampText?.setTextColor(textColor)
         }
 
         fun bind(message: Message) {
